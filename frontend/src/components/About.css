@@ -1,0 +1,123 @@
+.about-content {
+  display: flex;
+  gap: 4rem;
+  align-items: center;
+}
+
+.about-text {
+  flex: 1;
+}
+
+.about-text p {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  font-size: 1.05rem;
+}
+
+.about-details {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.light-mode .about-details {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.detail-item {
+  display: flex;
+  gap: 1rem;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: var(--accent-cyan);
+  min-width: 90px;
+}
+
+.detail-value {
+  color: var(--text-primary);
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+.about-visual {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 400px;
+}
+
+/* Abstract Tech Sphere Animation */
+.tech-sphere {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sphere-core {
+  width: 60px;
+  height: 60px;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  box-shadow: 0 0 40px var(--accent-cyan);
+  z-index: 10;
+  animation: pulse-core 3s infinite alternate;
+}
+
+.orbit {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px dashed rgba(0, 242, 254, 0.3);
+  animation: spin linear infinite;
+}
+
+.orbit-1 {
+  width: 150px;
+  height: 150px;
+  animation-duration: 10s;
+  border-left: 2px solid var(--accent-cyan);
+}
+
+.orbit-2 {
+  width: 220px;
+  height: 220px;
+  animation-duration: 15s;
+  animation-direction: reverse;
+  border-right: 2px solid var(--accent-blue);
+}
+
+.orbit-3 {
+  width: 300px;
+  height: 300px;
+  animation-duration: 20s;
+  border-top: 2px solid var(--accent-purple);
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse-core {
+  0% { transform: scale(0.9); box-shadow: 0 0 20px var(--accent-cyan); }
+  100% { transform: scale(1.1); box-shadow: 0 0 60px var(--accent-cyan); }
+}
+
+@media (max-width: 900px) {
+  .about-content {
+    flex-direction: column;
+  }
+}

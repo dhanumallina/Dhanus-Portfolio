@@ -1,0 +1,127 @@
+.blog-search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  padding: 0.5rem 1.5rem;
+  width: 100%;
+  max-width: 500px;
+  transition: border-color 0.3s;
+}
+
+.light-mode .search-bar {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.search-bar:focus-within {
+  border-color: var(--accent-cyan);
+}
+
+.search-icon {
+  color: var(--text-secondary);
+  margin-right: 10px;
+}
+
+.search-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 1rem;
+  padding: 0.5rem 0;
+  outline: none;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.blog-card {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.light-mode .blog-card {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.blog-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  border-color: rgba(127, 0, 255, 0.3);
+}
+
+.blog-category {
+  display: inline-block;
+  background: rgba(127, 0, 255, 0.1);
+  color: var(--accent-purple);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  align-self: flex-start;
+}
+
+.blog-title {
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.blog-excerpt {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.blog-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 1rem;
+}
+
+.light-mode .blog-meta {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.meta-item.date {
+  margin-left: auto;
+}
+
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 3rem;
+  font-style: italic;
+}

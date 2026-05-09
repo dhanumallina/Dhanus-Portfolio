@@ -1,0 +1,115 @@
+.admin-login-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+}
+
+.admin-login-card {
+  background: var(--bg-secondary);
+  padding: 3rem;
+  border-radius: 16px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  max-width: 400px;
+  width: 90%;
+}
+
+.admin-icon {
+  color: var(--accent-purple);
+  margin-bottom: 1rem;
+}
+
+.admin-login-card h2 {
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.admin-login-card p {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.admin-login-card input {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.admin-login-card input:focus {
+  border-color: var(--accent-cyan);
+}
+
+.admin-login-card button {
+  width: 100%;
+}
+
+.admin-dashboard {
+  display: flex;
+  height: 100vh;
+  padding-top: 80px; /* offset for navbar */
+}
+
+.admin-sidebar {
+  width: 250px;
+  background: var(--bg-secondary);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 2rem;
+}
+
+.admin-sidebar h2 {
+  color: var(--accent-cyan);
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+}
+
+.admin-sidebar ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-sidebar li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 1rem;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.admin-sidebar li:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.admin-sidebar li.active {
+  background: rgba(0, 242, 254, 0.1);
+  color: var(--accent-cyan);
+}
+
+.admin-content {
+  flex: 1;
+  padding: 3rem;
+  background: var(--bg-primary);
+  overflow-y: auto;
+}
+
+.admin-content h3 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.admin-content p {
+  color: var(--text-secondary);
+}
