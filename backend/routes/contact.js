@@ -1,44 +1,35 @@
 const express = require('express');
 const router = express.Router();
 const Message = require('../models/Message');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-// POST /api/contact
+const resend = new Resend(process.env.re_BwpTkfD8_FGUhqLCiG4z5Ev9uq1yXdjMX);
+
 router.post('/', async (req, res) => {
     try {
         const { name, email, message } = req.body;
 
-        // Save message to DB
-        const newMessage = new Message({ name, email, message });
+        // Save to MongoDB
+        const newMessage = new Message({
+            name,
+            email,
+            message
+        });
+
         await newMessage.save();
 
-        // Create transporter
-        const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
- });
-
-        // Verify transporter
-        //await transporter.verify();
-
         // Send thank-you email
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
+        await resend.emails.send({
+            from: 'onboarding@resend.dev',
             to: email,
             subject: 'Thanks for visiting my portfolio!',
             text: `Hi ${name},
 
-Thank you for reaching out! I have received your message and will get back to you soon.
+Thank you for reaching out! I received your message and will get back to you soon.
 
 Best,
-Mallina Dhanusivaramakrishna
-Full Stack Developer & Data Analyst`
+Mallina Dhanusivaramakrishna`
         });
-
-        console.log('Thank-you email sent successfully');
 
         res.status(201).json({
             success: true,
