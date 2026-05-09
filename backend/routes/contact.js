@@ -3,13 +3,13 @@ const router = express.Router();
 const Message = require('../models/Message');
 const { Resend } = require('resend');
 
-const resend = new Resend(process.env.re_BwpTkfD8_FGUhqLCiG4z5Ev9uq1yXdjMX);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 router.post('/', async (req, res) => {
     try {
         const { name, email, message } = req.body;
 
-        // Save to MongoDB
+        // Save message
         const newMessage = new Message({
             name,
             email,
