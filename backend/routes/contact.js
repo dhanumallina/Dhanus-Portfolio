@@ -19,17 +19,20 @@ router.post('/', async (req, res) => {
         await newMessage.save();
 
         // Send thank-you email
-        await resend.emails.send({
-            from: 'onboarding@resend.dev',
-            to: email,
-            subject: 'Thanks for visiting my portfolio!',
-            text: `Hi ${name},
+        const data = await resend.emails.send({
+    from: 'onboarding@resend.dev',
+    reply_to: 'mallinadhanu@gmail.com',
+    to: email,
+    subject: 'Thanks for visiting my portfolio!',
+    text: `Hi ${name},
 
 Thank you for reaching out! I received your message and will get back to you soon.
 
 Best,
 Mallina Dhanusivaramakrishna`
-        });
+});
+
+console.log(data);
 
         res.status(201).json({
             success: true,
