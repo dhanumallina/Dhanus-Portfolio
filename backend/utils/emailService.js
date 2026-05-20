@@ -8,13 +8,13 @@ const sendEmail = async ({ to, subject, html }) => {
     if (emailUser && emailPass) {
         // Use Gmail SMTP
         try {
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: emailUser,
-                    pass: emailPass
-                }
-            });
+          const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
             const mailOptions = {
                 from: `"Mallina Dhanusivaramakrishna" <${emailUser}>`,
