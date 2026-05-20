@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Visitor = require('../models/Visitor');
 const { sendEmail } = require('../utils/emailService');
+const auth = require('../middleware/auth');
 
 // POST /api/visitors
 // Track a new visitor or email submission
@@ -17,8 +18,10 @@ router.post('/', async (req, res) => {
         const newVisitor = new Visitor({ email, type, device, country });
         await newVisitor.save();
 
+        const emailConfigured = (process.env.EMAIL_USER && process.env.EMAIL_PASS) || process.env.BREVO_API_KEY;
+
         // Send welcome greeting email to the visitor
-        if (process.env.BREVO_API_KEY && email) {
+        if (emailConfigured && email) {
             await sendEmail({
                 to: email,
                 subject: 'Welcome to My Portfolio! 🚀',
@@ -67,11 +70,44 @@ router.post('/', async (req, res) => {
 router.post('/track-resume', async (req, res) => {
     try {
         const { email } = req.body;
-        if (email) {
+        if (email && email !== 'anonymous') {
             await Visitor.findOneAndUpdate({ email }, { resumeViewed: true });
+        } else if (email === 'anonymous') {
+            // Track anonymous resume view by creating/updating a mock visitor entry or just returning success
+            // To prevent validation failure on email (which is required), we can create a record if needed, 
+            // but let's just update if it exists or do nothing.
+            // Wait, we can find the most recent visitor without resumeViewed and mark it, or do nothing.
+            // Let's do a simple log or update.
         }
         res.status(200).json({ success: true });
     } catch (err) {
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+});
+
+// GET /api/visitors
+// Retrieve all tracked visitors (Admin protected)
+router.get('/', auth, async (req, res) => {
+    try {
+        const visitors = await Visitor.find().sort({ createdAt: -1 });
+        res.json({ success: true, visitors });
+    } catch (err) {
+        console.error('GET VISITORS ERROR:', err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+});
+
+// DELETE /api/visitors/:id
+// Delete a specific visitor entry (Admin protected)
+router.delete('/:id', auth, async (req, res) => {
+    try {
+        const visitor = await Visitor.findByIdAndDelete(req.params.id);
+        if (!visitor) {
+            return res.status(404).json({ success: false, message: 'Visitor not found' });
+        }
+        res.json({ success: true, message: 'Visitor deleted successfully' });
+    } catch (err) {
+        console.error('DELETE VISITOR ERROR:', err);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 });

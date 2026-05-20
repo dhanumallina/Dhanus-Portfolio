@@ -35,6 +35,7 @@ const EmailPopup = () => {
         device: navigator.userAgent,
         country: 'Unknown' // Ideally use a GeoIP API here
       });
+      localStorage.setItem('visitorEmail', email);
       setStatus('success');
       setTimeout(() => {
         handleClose();

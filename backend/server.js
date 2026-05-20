@@ -11,9 +11,24 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 
+const Project = require('./models/Project');
+const projectsRouter = require('./routes/projects');
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB Connected'))
+  .then(async () => {
+    console.log('MongoDB Connected');
+    try {
+      const count = await Project.countDocuments();
+      if (count === 0) {
+        console.log('🌱 Database empty. Seeding default projects...');
+        await Project.insertMany(projectsRouter.defaultProjects);
+        console.log('✅ Default projects seeded!');
+      }
+    } catch (seedErr) {
+      console.error('❌ Error during auto-seeding:', seedErr);
+    }
+  })
   .catch((err) => console.log(err));
 
 // Root Route

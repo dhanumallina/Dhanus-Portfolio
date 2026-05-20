@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Message = require('../models/Message');
 const { sendEmail } = require('../utils/emailService');
+const auth = require('../middleware/auth');
 
+// POST /api/contact
+// Submit a contact message
 router.post('/', async (req, res) => {
     try {
         const { name, email, message } = req.body;
@@ -11,8 +14,10 @@ router.post('/', async (req, res) => {
         const newMessage = new Message({ name, email, message });
         await newMessage.save();
 
-        // Send emails if Brevo is configured
-        if (process.env.BREVO_API_KEY) {
+        const emailConfigured = (process.env.EMAIL_USER && process.env.EMAIL_PASS) || process.env.BREVO_API_KEY;
+
+        // Send emails if email system is configured
+        if (emailConfigured) {
             // 1. Send "Thank You" email TO THE VISITOR
             await sendEmail({
                 to: email,
@@ -69,6 +74,33 @@ router.post('/', async (req, res) => {
     } catch (err) {
         console.error('CONTACT ROUTE ERROR:', err);
         res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// GET /api/contact
+// Fetch all contact submissions (Admin protected)
+router.get('/', auth, async (req, res) => {
+    try {
+        const messages = await Message.find().sort({ createdAt: -1 });
+        res.json({ success: true, messages });
+    } catch (err) {
+        console.error('GET CONTACT MESSAGES ERROR:', err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+});
+
+// DELETE /api/contact/:id
+// Delete a specific contact message (Admin protected)
+router.delete('/:id', auth, async (req, res) => {
+    try {
+        const message = await Message.findByIdAndDelete(req.params.id);
+        if (!message) {
+            return res.status(404).json({ success: false, message: 'Message not found' });
+        }
+        res.json({ success: true, message: 'Message deleted successfully' });
+    } catch (err) {
+        console.error('DELETE CONTACT MESSAGE ERROR:', err);
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 });
 
