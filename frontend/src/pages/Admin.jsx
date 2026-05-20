@@ -29,7 +29,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const apiBaseUrl = import.meta.env.VITE_API_URL;;
 
   // Persistent login
   useEffect(() => {
