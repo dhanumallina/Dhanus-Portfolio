@@ -1,26 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Message = require('../models/Message');
-const nodemailer = require('nodemailer');
-
-// Create reusable transporter
-const createTransporter = () => {
-    return nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, // true for 465, false for other ports (like 587)
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        },
-        tls: {
-            rejectUnauthorized: false,
-            minVersion: 'TLSv1.2'
-        },
-        connectionTimeout: 10000,
-        greetingTimeout: 10000
-    });
-};
+const { sendEmail } = require('../utils/emailService');
 
 router.post('/', async (req, res) => {
     try {
@@ -30,13 +11,10 @@ router.post('/', async (req, res) => {
         const newMessage = new Message({ name, email, message });
         await newMessage.save();
 
-        // Send emails if credentials are configured
-        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-            const transporter = createTransporter();
-
+        // Send emails if Brevo is configured
+        if (process.env.BREVO_API_KEY) {
             // 1. Send "Thank You" email TO THE VISITOR
-            await transporter.sendMail({
-                from: `"Mallina Dhanusivaramakrishna" <${process.env.EMAIL_USER}>`,
+            await sendEmail({
                 to: email,
                 subject: 'Thanks for reaching out! 🙌',
                 html: `
@@ -69,9 +47,8 @@ router.post('/', async (req, res) => {
             });
 
             // 2. Send notification TO THE ADMIN (you)
-            await transporter.sendMail({
-                from: `"Portfolio Bot" <${process.env.EMAIL_USER}>`,
-                to: process.env.EMAIL_USER,
+            await sendEmail({
+                to: process.env.EMAIL_USER || 'mallinadhanu@gmail.com',
                 subject: `📬 New Contact: ${name} (${email})`,
                 html: `
                     <div style="font-family: Arial, sans-serif; padding: 20px;">

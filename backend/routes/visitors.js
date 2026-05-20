@@ -1,26 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Visitor = require('../models/Visitor');
-const nodemailer = require('nodemailer');
-
-// Create reusable transporter
-const createTransporter = () => {
-    return nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, // true for 465, false for other ports (like 587)
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        },
-        tls: {
-            rejectUnauthorized: false,
-            minVersion: 'TLSv1.2'
-        },
-        connectionTimeout: 10000,
-        greetingTimeout: 10000
-    });
-};
+const { sendEmail } = require('../utils/emailService');
 
 // POST /api/visitors
 // Track a new visitor or email submission
@@ -37,11 +18,8 @@ router.post('/', async (req, res) => {
         await newVisitor.save();
 
         // Send welcome greeting email to the visitor
-        if (process.env.EMAIL_USER && process.env.EMAIL_PASS && email) {
-            const transporter = createTransporter();
-
-            await transporter.sendMail({
-                from: `"Mallina Dhanusivaramakrishna" <${process.env.EMAIL_USER}>`,
+        if (process.env.BREVO_API_KEY && email) {
+            await sendEmail({
                 to: email,
                 subject: 'Welcome to My Portfolio! 🚀',
                 html: `
