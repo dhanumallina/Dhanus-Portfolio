@@ -10,12 +10,15 @@ const sendEmail = async ({ to, subject, html }) => {
         // Use Gmail SMTP
         try {
           const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: emailUser,
-    pass: emailPass,
-  },
-});
+            service: "gmail",
+            auth: {
+              user: emailUser,
+              pass: emailPass,
+            },
+            connectionTimeout: 5000,
+            greetingTimeout: 5000,
+            socketTimeout: 5000,
+          });
 
             const mailOptions = {
                 from: `"Mallina Dhanusivaramakrishna" <${emailUser}>`,
