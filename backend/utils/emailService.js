@@ -6,36 +6,8 @@ const sendEmail = async ({ to, subject, html }) => {
     const emailPass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
     const apiKey = process.env.BREVO_API_KEY;
 
-    if (emailUser && emailPass) {
-        // Use Gmail SMTP
-        try {
-          const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-              user: emailUser,
-              pass: emailPass,
-            },
-            connectionTimeout: 5000,
-            greetingTimeout: 5000,
-            socketTimeout: 5000,
-          });
-
-            const mailOptions = {
-                from: `"Mallina Dhanusivaramakrishna" <${emailUser}>`,
-                to,
-                subject,
-                html
-            };
-
-            const info = await transporter.sendMail(mailOptions);
-            console.log(`✅ Email sent successfully via Gmail SMTP to ${to}. MessageId:`, info.messageId);
-            return info;
-        } catch (error) {
-            console.error('❌ Gmail SMTP Email Error:', error.message);
-            throw error;
-        }
-    } else if (apiKey) {
-        // Fallback to Brevo
+    if (apiKey) {
+        // Use Brevo (HTTP API - preferred for production/Render to bypass SMTP block)
         try {
             const senderEmail = emailUser || 'mallinadhanu@gmail.com';
             const response = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -70,8 +42,36 @@ const sendEmail = async ({ to, subject, html }) => {
             console.error('❌ Brevo Email Error:', error.message);
             throw error;
         }
+    } else if (emailUser && emailPass) {
+        // Use Gmail SMTP (fallback - works locally but blocked on Render Free Tier)
+        try {
+          const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: emailUser,
+              pass: emailPass,
+            },
+            connectionTimeout: 5000,
+            greetingTimeout: 5000,
+            socketTimeout: 5000,
+          });
+
+            const mailOptions = {
+                from: `"Mallina Dhanusivaramakrishna" <${emailUser}>`,
+                to,
+                subject,
+                html
+            };
+
+            const info = await transporter.sendMail(mailOptions);
+            console.log(`✅ Email sent successfully via Gmail SMTP to ${to}. MessageId:`, info.messageId);
+            return info;
+        } catch (error) {
+            console.error('❌ Gmail SMTP Email Error:', error.message);
+            throw error;
+        }
     } else {
-        console.warn('⚠️ Neither Gmail SMTP credentials (EMAIL_USER & EMAIL_PASS) nor BREVO_API_KEY are defined. Email will not be sent.');
+        console.warn('⚠️ Neither BREVO_API_KEY nor Gmail SMTP credentials (EMAIL_USER & EMAIL_PASS) are defined. Email will not be sent.');
         return null;
     }
 };
