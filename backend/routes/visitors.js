@@ -18,11 +18,14 @@ router.post('/', async (req, res) => {
         const newVisitor = new Visitor({ email, type, device, country });
         await newVisitor.save();
 
-        const emailConfigured = (process.env.EMAIL_USER && process.env.EMAIL_PASS) || process.env.BREVO_API_KEY;
+        const emailConfigured = (process.env.SMTP_USER || process.env.EMAIL_USER) && (process.env.SMTP_PASS || process.env.EMAIL_PASS);
 
-        // Send welcome greeting email to the visitor
+        // Respond immediately — send email fire-and-forget (non-blocking)
+        res.status(201).json({ success: true, visitor: newVisitor });
+
+        // Send welcome greeting email to the visitor (async, doesn't block response)
         if (emailConfigured && email) {
-            await sendEmail({
+            sendEmail({
                 to: email,
                 subject: 'Welcome to My Portfolio! 🚀',
                 html: `
@@ -53,12 +56,9 @@ router.post('/', async (req, res) => {
                         </div>
                     </div>
                 `
-            });
-
-            console.log(`✅ Welcome email sent to ${email} (Type: ${type})`);
+            }).then(() => console.log(`✅ Welcome email sent to ${email} (Type: ${type})`)
+            ).catch(err => console.error(`❌ Welcome email failed for ${email}:`, err.message));
         }
-
-        res.status(201).json({ success: true, visitor: newVisitor });
     } catch (err) {
         console.error('VISITOR ROUTE ERROR:', err);
         res.status(500).json({ success: false, message: 'Server Error' });

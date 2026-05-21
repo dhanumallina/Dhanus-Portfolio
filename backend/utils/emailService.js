@@ -1,8 +1,9 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async ({ to, subject, html }) => {
-    const emailUser = process.env.EMAIL_USER;
-    const emailPass = process.env.EMAIL_PASS;
+    // Support both SMTP_USER/SMTP_PASS (Render) and EMAIL_USER/EMAIL_PASS (legacy)
+    const emailUser = process.env.SMTP_USER || process.env.EMAIL_USER;
+    const emailPass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
     const apiKey = process.env.BREVO_API_KEY;
 
     if (emailUser && emailPass) {
@@ -11,8 +12,8 @@ const sendEmail = async ({ to, subject, html }) => {
           const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: emailUser,
+    pass: emailPass,
   },
 });
 
