@@ -1,6 +1,15 @@
 const nodemailer = require('nodemailer');
 
+const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
+
 const sendEmail = async ({ to, subject, html }) => {
+    if (!to || !validateEmail(to)) {
+        throw new Error(`Invalid email address: ${to}`);
+    }
+
     const emailUser = process.env.EMAIL_USER;
     const emailPass = process.env.EMAIL_PASS;
     const apiKey = process.env.BREVO_API_KEY;
