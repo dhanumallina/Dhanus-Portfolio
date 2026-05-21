@@ -67,7 +67,9 @@ app.get('/api/debug-email', async (req, res) => {
       env: {
         hasUser: !!(process.env.SMTP_USER || process.env.EMAIL_USER),
         hasPass: !!(process.env.SMTP_PASS || process.env.EMAIL_PASS),
-        userVal: process.env.SMTP_USER || process.env.EMAIL_USER
+        userVal: process.env.SMTP_USER || process.env.EMAIL_USER,
+        hasBrevoKey: !!process.env.BREVO_API_KEY,
+        brevoKeyPrefix: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.substring(0, 6) : 'none'
       }
     });
   }
