@@ -41,6 +41,38 @@ app.get('/api/ping', (req, res) => {
   res.status(200).send('pong');
 });
 
+// Debug Email Route
+app.get('/api/debug-email', async (req, res) => {
+  const toEmail = req.query.to || 'mallinadhanu@gmail.com';
+  try {
+    const { sendEmail } = require('./utils/emailService');
+    const info = await sendEmail({
+      to: toEmail,
+      subject: 'Debug Email from Render 🧪',
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; background: #111; color: #fff;">
+          <h2>Render Backend Debug Email</h2>
+          <p>This is a debug test email sent from the live Render container.</p>
+          <p>SMTP User in use: <strong>${process.env.SMTP_USER || process.env.EMAIL_USER}</strong></p>
+        </div>
+      `
+    });
+    res.json({ success: true, message: 'Email sent successfully', info });
+  } catch (err) {
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to send email', 
+      error: err.message, 
+      stack: err.stack,
+      env: {
+        hasUser: !!(process.env.SMTP_USER || process.env.EMAIL_USER),
+        hasPass: !!(process.env.SMTP_PASS || process.env.EMAIL_PASS),
+        userVal: process.env.SMTP_USER || process.env.EMAIL_USER
+      }
+    });
+  }
+});
+
 // API Routes
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/projects', require('./routes/projects'));
