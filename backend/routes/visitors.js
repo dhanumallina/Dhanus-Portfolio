@@ -10,8 +10,17 @@ router.post('/', async (req, res) => {
     try {
         const { email, device, country } = req.body;
         
+        if (!email) {
+            return res.status(400).json({ success: false, message: 'Email is required' });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ success: false, message: 'Invalid email format' });
+        }
+        
         let type = 'Normal';
-        if (email && email.includes('@') && !email.includes('gmail.com') && !email.includes('yahoo.com') && !email.includes('hotmail.com')) {
+        if (email.includes('@') && !email.includes('gmail.com') && !email.includes('yahoo.com') && !email.includes('hotmail.com')) {
             type = 'Recruiter';
         }
 
@@ -22,46 +31,51 @@ router.post('/', async (req, res) => {
 
         // Send welcome greeting email to the visitor
         if (emailConfigured && email) {
-            await sendEmail({
-                to: email,
-                subject: 'Welcome to My Portfolio! 🚀',
-                html: `
-                    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #f0f0f0; border-radius: 12px; overflow: hidden;">
-                        <div style="background: linear-gradient(135deg, #00f2fe, #7f00ff); padding: 40px; text-align: center;">
-                            <h1 style="margin: 0; color: #fff; font-size: 28px;">Welcome! 👋</h1>
-                            <p style="color: rgba(255,255,255,0.9); margin-top: 10px; font-size: 16px;">Thanks for visiting my portfolio</p>
-                        </div>
-                        <div style="padding: 30px;">
-                            <p style="color: #a0a0a0; line-height: 1.8; font-size: 16px;">
-                                Hi there! I'm <strong style="color: #00f2fe;">Mallina Dhanusivaramakrishna</strong>, 
-                                a Full Stack Developer & Data Analyst passionate about building amazing web applications.
-                            </p>
-                            <p style="color: #a0a0a0; line-height: 1.8; font-size: 16px;">
-                                Feel free to explore my projects, check out my skills, and don't hesitate to reach out 
-                                if you'd like to collaborate or have any opportunities!
-                            </p>
-                            <div style="text-align: center; margin: 30px 0;">
-                                <a href="https://github.com/dhanumallina" style="display: inline-block; background: linear-gradient(135deg, #00f2fe, #4facfe); color: #0a0a0a; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">View My GitHub</a>
+            try {
+                await sendEmail({
+                    to: email,
+                    subject: 'Welcome to My Portfolio! 🚀',
+                    html: `
+                        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #f0f0f0; border-radius: 12px; overflow: hidden;">
+                            <div style="background: linear-gradient(135deg, #00f2fe, #7f00ff); padding: 40px; text-align: center;">
+                                <h1 style="margin: 0; color: #fff; font-size: 28px;">Welcome! 👋</h1>
+                                <p style="color: rgba(255,255,255,0.9); margin-top: 10px; font-size: 16px;">Thanks for visiting my portfolio</p>
                             </div>
-                            <hr style="border: none; border-top: 1px solid #1a1a1a; margin: 25px 0;">
-                            <p style="color: #666; font-size: 14px; margin: 0;">
-                                Best regards,<br>
-                                <strong style="color: #f0f0f0;">Mallina Dhanusivaramakrishna</strong><br>
-                                Full Stack Developer & Data Analyst<br>
-                                <a href="mailto:mallinadhanu@gmail.com" style="color: #00f2fe; text-decoration: none;">mallinadhanu@gmail.com</a>
-                            </p>
+                            <div style="padding: 30px;">
+                                <p style="color: #a0a0a0; line-height: 1.8; font-size: 16px;">
+                                    Hi there! I'm <strong style="color: #00f2fe;">Mallina Dhanusivaramakrishna</strong>, 
+                                    a Full Stack Developer & Data Analyst passionate about building amazing web applications.
+                                </p>
+                                <p style="color: #a0a0a0; line-height: 1.8; font-size: 16px;">
+                                    Feel free to explore my projects, check out my skills, and don't hesitate to reach out 
+                                    if you'd like to collaborate or have any opportunities!
+                                </p>
+                                <div style="text-align: center; margin: 30px 0;">
+                                    <a href="https://github.com/dhanumallina" style="display: inline-block; background: linear-gradient(135deg, #00f2fe, #4facfe); color: #0a0a0a; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">View My GitHub</a>
+                                </div>
+                                <hr style="border: none; border-top: 1px solid #1a1a1a; margin: 25px 0;">
+                                <p style="color: #666; font-size: 14px; margin: 0;">
+                                    Best regards,<br>
+                                    <strong style="color: #f0f0f0;">Mallina Dhanusivaramakrishna</strong><br>
+                                    Full Stack Developer & Data Analyst<br>
+                                    <a href="mailto:mallinadhanu@gmail.com" style="color: #00f2fe; text-decoration: none;">mallinadhanu@gmail.com</a>
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                `
-            });
+                    `
+                });
 
-            console.log(`✅ Welcome email sent to ${email} (Type: ${type})`);
+                console.log(`✅ Welcome email sent to ${email} (Type: ${type})`);
+            } catch (emailErr) {
+                console.error('⚠️ Failed to send welcome email:', emailErr.message);
+                // Don't fail the visitor registration if email sending fails
+            }
         }
 
         res.status(201).json({ success: true, visitor: newVisitor });
     } catch (err) {
         console.error('VISITOR ROUTE ERROR:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: err.message || 'Server Error' });
     }
 });
 
